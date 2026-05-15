@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{{ url_for('static', filename='house.jpg') }}");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            filter: blur(8px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        header {
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header img {
+            display: block;
+            margin-right: 50px;
+        }
+
+        header h1 {
+            margin-top: 35px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 800px;
+            margin: 120px auto 20px; /* Add margin-bottom for spacing before footer */
+            padding: 20px;
+            background-color: #ffffff34;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #000000;
+            color: #fff;
+            padding: 10px 0; /* Add padding for footer */
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ff7b1b;
+            font-size: 18px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            padding: 16px 30px;
+            border-radius: 8px;
+        }
+
+        #predictedPrice {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff7b1b;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='LOGO.png') }}" alt="Logo">
+        <h1>House Price Prediction</h1>
+    </header>
+    <main>
+        <h3>Welcome to House Price Prediction Model!</h3>
+        <form id="predictionForm">
+            {% for feature, values in [('crim', crim), ('zn', zn), ('indus', indus), ('chas', chas), ('nox', nox), ('rm', rm), ('age', age), ('dis', dis), ('rad', rad), ('tax', tax), ('ptratio', ptratio), ('b', b), ('lstat', lstat)] %}
+            <label for="{{ feature }}">{{ feature | capitalize }}:</label>
+            <select id="{{ feature }}" name="{{ feature }}">
+                <option value="" disabled selected>Select {{ feature }}</option>
+                {% for value in values %}
+                    <option value="{{ value }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+            {% endfor %}
+            <button type="button" onclick="sendData()">Predict Price</button>
+            <div id="predictedPrice"></div>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2024 House Price Prediction. All rights reserved.</p>
+    </footer>
+    <script>
+        function sendData() {
+            const form = document.getElementById('predictionForm');
+            const formData = new FormData(form);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(price => {
+                document.getElementById("predictedPrice").innerHTML = "Price: INR " + price;
+            });
+        }
+    </script>
+</body>
+</html>
